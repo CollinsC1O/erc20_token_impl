@@ -6,22 +6,22 @@
 // 1. Your own account
 // 2. Another devnet account
 
-
 use starknet::ContractAddress;
 #[starknet::interface]
 trait IMyToken<TContractState> {
-    fn name(self: @TContractState) -> ByteArray;
-    fn symbol(self: @TContractState) -> ByteArray;
-    fn decimals(self: @TContractState) -> u8;
-    fn totalSupply(self: @TContractState) -> u256;
-    fn balanceOf(self: @TContractState, account: ContractAddress) -> u256;
-
+    // fn name(self: @TContractState) -> ByteArray;
+    // fn symbol(self: @TContractState) -> ByteArray;
+    // fn decimals(self: @TContractState) -> u8;
+    // fn totalSupply(self: @TContractState) -> u256;
+    // fn balanceOf(self: @TContractState, account: ContractAddress) -> u256;
+    //fn mint(ref self: TContractState, amount: u256, recipient: ContractAddress);
+    fn burn(ref self: TContractState, amount: u256, account: ContractAddress);
 }
 
 #[starknet::contract]
 mod MyToken {
-    use openzeppelin_token::erc20::interface::IERC20;
-use openzeppelin_token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
+    //use openzeppelin_token::erc20::interface::IERC20;
+    use openzeppelin_token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
     use openzeppelin_access::ownable::OwnableComponent;
     use starknet::ContractAddress;
     use core::byte_array::ByteArray;
@@ -70,21 +70,28 @@ use openzeppelin_token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
 
     #[abi(embed_v0)]
     impl MyTokenImpl of super::IMyToken<ContractState> {
-        fn name(self: @ContractState) -> ByteArray{
-            self.erc20.name()
+        // fn name(self: @ContractState) -> ByteArray {
+        //     self.erc20.name()
+        // }
+        // fn symbol(self: @ContractState) -> ByteArray {
+        //     self.erc20.symbol()
+        // }
+        // fn decimals(self: @ContractState) -> u8 {
+        //     18
+        // }
+        // fn totalSupply(self: @ContractState) -> u256 {
+        //     self.erc20.totalSupply()
+        // }
+        // fn balanceOf(self: @ContractState, account: ContractAddress) -> u256 {
+        //     self.erc20.balanceOf(account)
+        // }
+        // // fn mint(ref self: ContractState, amount: u256, recipient: ContractAddress){
+        // //      self.ownable.assert_only_owner();
+        // //      self.erc20.mint(recipient, amount);
+        // // }
+        fn burn(ref self: ContractState, amount: u256, account: ContractAddress) {
+            self.ownable.assert_only_owner();
+            self.erc20.burn(account, amount);
         }
-    fn symbol(self: @ContractState) -> ByteArray{
-        self.erc20.symbol()
-    }
-    fn decimals(self: @ContractState) -> u8{
-        18
-    }
-    fn totalSupply(self: @ContractState) -> u256{
-        self.erc20.totalSupply()
-    }
-    fn balanceOf(self: @ContractState, account: ContractAddress) -> u256{
-        self.erc20.balanceOf(account)
-    }
-
     }
 }
