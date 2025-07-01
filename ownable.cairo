@@ -20,11 +20,12 @@ pub mod OwnableComponent {
     use core::num::traits::Zero;
 
     #[storage]
-    struct Storage {
+    pub struct Storage {
         owner: ContractAddress,
     }
 
     #[event]
+    #[derive(Drop, starknet::Event)]
     pub enum Event {
         OwnershipTransfer: OwnershipTransfer,
     }
